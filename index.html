@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZS Games</title>
+    <style>
+        /* RESET I PODSTAWOWE STYLE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: #f4f6f9;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        /* PASEK BOCZNY (KATEGORIE) */
+        aside {
+            width: 260px;
+            background-color: #ffffff;
+            border-right: 1px solid #e0e4ec;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2b7a78;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .category-item button {
+            width: 100%;
+            text-align: left;
+            padding: 12px 15px;
+            border: none;
+            background: none;
+            border-radius: 0; /* BRAK ZAOKRĄGLEŃ */
+            font-size: 16px;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-item button:hover {
+            background-color: #edf2f4;
+            color: #2b7a78;
+        }
+
+        .category-item button.active {
+            background-color: #2b7a78;
+            color: #ffffff;
+        }
+
+        /* GŁÓWNA ZAWARTOŚĆ */
+        main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 30px;
+        }
+
+        header {
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 28px;
+            color: #222;
+        }
+
+        /* SIATKA Z GRAMI (8 w poziomie) */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(8, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        /* KAFELEK GRY */
+        .game-card {
+            background-color: #ffffff;
+            border: 1px solid #e0e4ec;
+            border-radius: 0; /* BRAK ZAOKRĄGLEŃ */
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+            border-color: #2b7a78;
+        }
+
+        /* Podgląd/Ikona gry na obrazek */
+        .game-thumbnail {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-color: #edf2f4;
+            display: block;
+        }
+
+        .game-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .game-title {
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background-color: #ffffff;
+        }
+
+        /* RESPONSYWNOŚĆ */
+        @media (max-width: 1400px) {
+            .games-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+        }
+        @media (max-width: 1100px) {
+            .games-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        }
+        @media (max-width: 768px) {
+            aside { width: 200px; }
+            main { margin-left: 200px; }
+            .games-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="logo">🎮 ZS Games</div>
+        <ul class="category-list">
+            <li class="category-item"><button class="active" data-category="wszystkie">All Games</button></li>
+            <li class="category-item"><button data-category="zrecznosciowe">Skill</button></li>
+            <li class="category-item"><button data-category="logiczne">Puzzle</button></li>
+            <li class="category-item"><button data-category="inne">Another</button></li>
+            <li class="category-item"><button data-category="przygodowe">Adventure</button></li>
+            <li class="category-item"><button data-category="strategiczne">Strategy</button></li>
+        </ul>
+    </aside>
+
+    <main>
+        <header>
+            <h1>All Games</h1>
+        </header>
+
+        <section class="games-grid" id="gamesContainer"></section>
+    </main>
+
+    <script>
+        // BAZA DANYCH GIER PODZIELONA NA OSOBNE LISTY KATEGORII
+        // Wpisz tutaj własne linki do gier w 'url' oraz linki do okładek w 'img'
+        const gamesData = {
+            zrecznosciowe: [
+                { title: "Catch the square", url: "https://zygolinstudiosofficial.github.io/Catch-the-square/", img: "https://i.ibb.co/27MhVrPy/Catch-the-square.png" },
+                { title: "Dodger", url: "https://zygolinstudiosofficial.github.io/Dodger/", img: "https://i.ibb.co/5gH5GmDM/crasher.png" },
+                { title: "Birds", url: "https://zygolinstudiosofficial.github.io/Birds/", img: "https://i.ibb.co/6c63gb9L/Birds.png" },
+                { title: "Crystals", url: "https://zygolinstudiosofficial.github.io/Crystals/", img: "https://i.ibb.co/04dQvC9/Crystals.png" },
+                { title: "Pong", url: "https://zygolinstudiosofficial.github.io/Pong/", img: "https://i.ibb.co/wZ1ghyYk/Pong.png" },
+                { title: "Snake Arena", url: "https://zygolinstudiosofficial.github.io/Snake-Arena/", img: "https://i.ibb.co/R4zH4YCs/Snake-Arena.png" },
+                { title: "Sniper Special Operation", url: "https://zygolinstudiosofficial.github.io/Sniper-Special-Operation/", img: "https://i.ibb.co/G3HtDgmc/Sniper-Special-Operation.png" },
+                { title: "Star Shooter", url: "https://zygolinstudiosofficial.github.io/Star-Shooter/", img: "https://i.ibb.co/nxBzwbt/Star-Shooter.png" },
+                { title: "Tetris", url: "https://zygolinstudiosofficial.github.io/Tetris/", img: "https://i.ibb.co/4Zb9yWvW/Tetris.png" },
+                { title: "ZSPlatformer", url: "https://zygolinstudiosofficial.github.io/ZSPlatformer/", img: "https://i.ibb.co/bgJZ2xcb/ZSPlatformer.png" },
+                { title: "Snake Multiplayer", url: "https://zygolinstudiosofficial.github.io/Multiplayer-Snake-P2P/", img: "https://i.ibb.co/d4VMx6dG/Snake-Multiplayer.png" }
+            ],
+            logiczne: [
+                { title: "Gravity Core", url: "https://zygolinstudiosofficial.github.io/Graviti-Core/", img: "https://i.ibb.co/wFm1Nj9C/Gravity-Core.png" },
+                { title: "Memory Match", url: "https://zygolinstudiosofficial.github.io/Memory-Match/", img: "https://i.ibb.co/1fCGddsL/Memory-Match.png" },
+                { title: "Mahjong", url: "https://zygolinstudiosofficial.github.io/Mahjong/", img: "https://i.ibb.co/21npjhjW/Majong.png" },
+                { title: "Laser & Mirrors, Escape Maze", url: "https://zygolinstudiosofficial.github.io/Laser-&-Mirrors,-Escape-Maze/", img: "https://i.ibb.co/kgN5tJM4/Laser-Mirrors.png" },
+                { title: "solitaire", url: "https://zygolinstudiosofficial.github.io/Solitaire/", img: "https://i.ibb.co/HT0LtgGG/solitaire.png" }
+            ],
+            inne: [
+                { title: "Mining Clicker", url: "https://zygolinstudiosofficial.github.io/Mining-Clicker/", img: "https://i.ibb.co/G4ncSvgM/Mining-Clicker.png" },
+            ],
+            przygodowe: [
+                { title: "Dungeon Cravlers", url: "https://zygolinstudiosofficial.github.io/Dungeon-Cravlers/", img: "https://zygolinstudiosofficial.github.io/Dungeon-Cravlers/" },
+                { title: "forest adventure", url: "gra6.html", img: "https://i.ibb.co/S7M8N0Jz/forest-adventure.png" },
+                { title: "Space Sailors", url: "https://zygolinstudiosofficial.github.io/Space-Sailors/", img: "https://i.ibb.co/dSp5F9g/Space-Sailors.png" },
+            ],
+            strategiczne: [
+                { title: "Fortres", url: "https://zygolinstudiosofficial.github.io/Fortress/", img: "https://i.ibb.co/bRWn7Ttq/Fortres.png" },
+                { title: "ZS Tower Defence", url: "https://zygolinstudiosofficial.github.io/ZS-Tower-Defence/", img: "https://i.ibb.co/6RgkkN5C/Online-Tower-Defence.png" }
+            ]
+        };
+
+        const container = document.getElementById("gamesContainer");
+        const buttons = document.querySelectorAll('.category-item button');
+        const headerTitle = document.querySelector('header h1');
+
+        // Funkcja renderująca wybraną listę gier
+        function renderGames(category) {
+            container.innerHTML = "";
+            let listToDisplay = [];
+
+            if (category === "wszystkie") {
+                // Połącz wszystkie listy w jedną dla widoku głównego
+                Object.values(gamesData).forEach(catList => {
+                    listToDisplay = listToDisplay.concat(catList);
+                });
+            } else {
+                // Pobierz osobną listę dla wybranej kategorii
+                listToDisplay = gamesData[category] || [];
+            }
+
+            // Generowanie kodu HTML dla każdego kafelka gry
+            listToDisplay.forEach(game => {
+                const card = document.createElement("a");
+                card.href = game.url;
+                card.target = "_blank";
+                card.className = "game-card";
+
+                card.innerHTML = `
+                    <div class="game-thumbnail">
+                        <img src="${game.img}" alt="${game.title}">
+                    </div>
+                    <div class="game-title">${game.title}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Obsługa kliknięć w menu bocznym
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+                headerTitle.textContent = button.textContent;
+                
+                const selectedCat = button.getAttribute('data-category');
+                renderGames(selectedCat);
+            });
+        });
+
+        // Pierwsze uruchomienie - pokaż wszystkie gry
+        renderGames("wszystkie");
+    </script>
+</body>
+</html>
